@@ -4,38 +4,32 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 
 import static io.restassured.RestAssured.given;
 
 public class EndpointsSteps {
-    private int actualStatusCode;
+    private Response response;
 
-    @Given("Api url {string}")
-    public void api_url(String apiBaseUrl) {
+    @Given("I have API url {string}")
+    public void api_base_url(String apiBaseUrl) {
         System.out.println("Set baseURL = " + apiBaseUrl);
         RestAssured.baseURI = apiBaseUrl;
     }
 
-    @Given("endpoint is: {}")
-    public void endpointIsEndpoint(String endpoint) {
+
+    @When("I call {} endpoint")
+    public void get_response_status(String endpoint) {
+        System.out.println("Open " + endpoint + " endpoint");
         RestAssured.baseURI += endpoint;
-        System.out.println("Set endpoint: " + endpoint);
+        response  = RestAssured.given().get();
     }
 
-    @When("get Response Status")
-    public void get_response_status() {
-        actualStatusCode = given()
-                .when()
-                .get()
-                .statusCode();
-        System.out.println("Get Response");
-    }
-
-    @Then("Verify Status code is {int}")
-    public void verify_status_code_is(Integer expectedStatusCode) {
-        Assertions.assertEquals(expectedStatusCode, actualStatusCode,
-                String.format("The expected status %d is not equal to actual status %d!",
+    @Then("I verify that the status code is {int}")
+    public void verify_status_code_is(int expectedStatusCode) {
+        int actualStatusCode = response.getStatusCode();
+        Assertions.assertEquals(expectedStatusCode, actualStatusCode, String.format("The expected status %d is not equal to actual status %d!",
                         expectedStatusCode, actualStatusCode));
         System.out.println("Verify Status code: " + expectedStatusCode);
     }

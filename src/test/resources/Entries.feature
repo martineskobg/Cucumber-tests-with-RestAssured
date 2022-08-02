@@ -24,3 +24,9 @@ Feature: Test Entries API
       | Cors        |
       | Link        |
       | Category    |
+
+  @httpsIsFalse
+  Scenario: Check the count of all entries with parameter HTTPS equal to false
+    Given Count of entries with parameter HTTPS false is 92
+    When Get all entries with parameter HTTPS equal to false
+    Then Verify expected and actual count

@@ -1,48 +1,52 @@
 package org.example;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
 
-import java.util.List;
-import java.util.Map;
+import static io.restassured.RestAssured.given;
 
 public class Main {
     final static String URL = "https://api.publicapis.org/";
 
     public static void main(String[] args) {
-        RestAssured.baseURI = URL;
-
-        Response responseEntries = RestAssured.given().get("entries");
-        Response responseCategories = RestAssured.given().get("categories");
-
-        JsonPath jsonPathEntries = responseEntries.jsonPath();
-        JsonPath jsonPathCategories = responseCategories.jsonPath();
+        String categories = "categories";
+        String entries = "entries";
 
         // Get String
-        for (int i = 0; i < 3; i++) {
-            String apiName = jsonPathEntries.getString(String.format("entries[%d].API", i));
-            String category = jsonPathEntries.getString(String.format("entries[%d].Category", i));
-            System.out.println("Api name: " + apiName + " Category: " + category);
-        }
+        RestAssured.baseURI = URL + categories;
+        System.out.println("Get String");
+        System.out.println(given()
+                .get()
+                .jsonPath()
+                .getString("categories") + "\n");
+        // Get integer
+        System.out.println("Get Integer");
+        System.out.println(given()
+                .get()
+                .jsonPath()
+                .getInt("count") + "\n");
 
-        // Get Int
-        int categoriesCount = jsonPathCategories.getInt("count");
-        System.out.println("\nCount of categories: " + categoriesCount);
+        //Get List
+        System.out.println("Get List");
+        given()
+                .get()
+                .jsonPath()
+                .getList("categories")
+                .forEach(System.out::println);
 
-        // Get List
-        List<String> categories = jsonPathCategories.getList("categories");
-        System.out.println("\nAll Categories as List " + categories);
+        //Get Object
+        System.out.println("\nGet Object");
+        RestAssured.baseURI = URL + entries;
+        System.out.println(given()
+                .get()
+                .jsonPath()
+                .getJsonObject("entries[11]")
+                .toString() + "\n");
 
-        // Get Json Object
-        Object object = jsonPathEntries.getJsonObject("entries[1]");
-        System.out.println("\nAs Object: " + object.toString());
-
-        // Get Map
-        System.out.print("\nGet Map:\n");
-        Map<Object, Object> entriesMap = jsonPathEntries.getMap("entries[10]");
-        entriesMap.entrySet().forEach(entry -> {
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
-        });
+        //Get Map
+        System.out.println("Get Map");
+        given()
+                .get()
+                .jsonPath()
+                .getMap("entries[50]").forEach((k, v) -> System.out.println(k + " =-> " + v));
     }
 }

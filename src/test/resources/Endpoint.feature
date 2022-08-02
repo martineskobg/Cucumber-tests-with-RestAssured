@@ -1,20 +1,17 @@
 @endpoint @endpoints
 Feature: Check the status code for all endpoints
 
-  Background: I have OpenAPi link
-    Given Api url "https://api.publicapis.org/"
-
   @endpointStatusCode
-  Scenario Outline: Check if the status code of all endpoints is 200
-    Given endpoint is: <endpoint>
-    When get Response Status
-    Then Verify Status code is 200
+  Scenario Outline: Status code 200 for endpoints
+    Given I have API url "https://api.publicapis.org/"
+    When I call <endpointName> endpoint
+    Then I verify that the status code is 200
     Examples:
-      | endpoint   |
-      | health     |
-      | categories |
-      | random     |
-      | entries    |
+      | endpointName |
+      | health       |
+      | categories   |
+      | random       |
+      | entries      |
 
 
 

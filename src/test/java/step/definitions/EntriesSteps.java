@@ -4,19 +4,22 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static io.restassured.RestAssured.given;
+
 public class EntriesSteps {
-    Response responseEntries;
     private int expectedEntriesCount;
     private int actualEntriesCount;
     private String entryParameter;
-    private final List<Map<Object, Object>> entriesList = new ArrayList<>();
+    private List<Map<Object, Object>> entriesList = new ArrayList<>();
+    private int getExpectedEntriesHttpsCount;
+    private int actualEntriesHttpsCount;
+
 
     @Given("Api base url for entries {string}")
     public void apiUrlBaseUrlForEntries(String url) {
@@ -32,14 +35,16 @@ public class EntriesSteps {
 
     @When("Get the actual count")
     public void get_the_actual_count() {
-        responseEntries = RestAssured.given().get();
-        actualEntriesCount = responseEntries.jsonPath().getInt("count");
+        actualEntriesCount = given()
+                .get()
+                .jsonPath()
+                .getInt("count");
         System.out.println("Get actual count: " + actualEntriesCount);
     }
 
     @Then("Verify that expected count is equal to actual")
     public void verify_that_expected_count_is_equal_to_actual() {
-        System.out.println("Asser the count");
+        System.out.println("Verify that expected count is equal to actual");
         Assertions.assertEquals(expectedEntriesCount, actualEntriesCount, "Expected count is not equal to actual count of entries!");
     }
 
@@ -51,18 +56,13 @@ public class EntriesSteps {
 
     @When("Get all entries")
     public void getAllEntriesAsAList() {
-        String entry;
-        responseEntries = RestAssured.given().get();
-        for (int i = 0; i < actualEntriesCount; i++) {
-            entry = String.format("entries[%d]", i);
-            entriesList.add(responseEntries.jsonPath().getMap(entry));
-            System.out.println(String.format("Entry whit name: %s has been added to the list " + responseEntries.jsonPath()));
-        }
         System.out.println("Get all Entries");
+        entriesList = given().get().jsonPath().getList("entries");
     }
 
     @Then("Verify that the entry contains the given parameter")
     public void verifyThatTheEntryContainsTheGivenParameter() {
+        System.out.println("Verify that the entry contains the given parameter");
         boolean hasParameter;
         for (Map<Object, Object> entriesMap : entriesList) {
             hasParameter = entriesMap.containsKey(entryParameter);
@@ -70,5 +70,26 @@ public class EntriesSteps {
         }
     }
 
+    @Given("Count of entries with parameter HTTPS false is {int}")
+    public void countOfEntriesWithParameterHTTPSFalseIs(int count) {
+        System.out.println("Get expected Count of entries with parameter HTTPS false");
+        getExpectedEntriesHttpsCount = count;
+    }
 
+    @When("Get all entries with parameter HTTPS equal to false")
+    public void getAllEntriesWithParameterHTTPSEqualToFalse() {
+        System.out.println("Get all entries with parameter HTTPS equal to false");
+        actualEntriesHttpsCount = given()
+                .when().queryParam("https", "false")
+                .get()
+                .jsonPath()
+                .getInt("count");
+    }
+
+    @Then("Verify expected and actual count")
+    public void verifyExpectedAndActualCount() {
+        System.out.println("Verify expected and actual count");
+        Assertions.assertEquals(getExpectedEntriesHttpsCount, actualEntriesHttpsCount, "The expected count is not equal to "
+                + actualEntriesHttpsCount);
+    }
 }

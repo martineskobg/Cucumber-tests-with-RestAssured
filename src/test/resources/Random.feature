@@ -9,6 +9,7 @@ Feature: Test Random API
     Given Expected value of count 1
     When Get the actual random count
     Then Verify the count
+
   @randomParameterCount
   Scenario: Check the count of random parameters
     Given Expected count of the random endpoint parameters is 7
@@ -20,4 +21,8 @@ Feature: Test Random API
     Given Parameter "HTTPS"
     When Get the value of HTTPS parameter
     Then Verify that HTTPS has value true
-
+ @cors
+  Scenario: Verify the parameter Cors value when call random endpoint with param Cors equal to yes
+    Given Parameter Cors is yes
+    When Get random entry with param Cors equal to yes
+    Then Verify cors value

@@ -1,5 +1,5 @@
 @endpoint @categories
-Feature: Test Categories API
+Feature: Content testing for each parameter that is accepted for endpoint:
 
   Background:
     Given Api url base url for categories "https://api.publicapis.org/categories"

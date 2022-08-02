@@ -4,14 +4,14 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
 
+import static io.restassured.RestAssured.given;
+
 public class CategoriesSteps {
     private int expectedCategoriesCount;
-    private Response responseCategories;
     private int actualCountCategories;
     private String category;
     private List<String> categoryList;
@@ -23,15 +23,18 @@ public class CategoriesSteps {
     }
 
     @Given("Expected count of all categories is {int}")
-    public void expected_count_of_all_categories_is(Integer count) {
+    public void expected_count_of_all_categories_is(int count) {
         expectedCategoriesCount = count;
         System.out.println("Expected count: " + count);
     }
 
     @When("Get the actual categories count")
     public void get_the_actual_categories_count() {
-        responseCategories = RestAssured.given().get();
-        actualCountCategories = responseCategories.jsonPath().getInt("count");
+        actualCountCategories = given()
+                .get()
+                .jsonPath()
+                .getInt("count");
+
         System.out.println("Get actual count: " + actualCountCategories);
     }
 
@@ -50,9 +53,11 @@ public class CategoriesSteps {
 
     @When("Get all categories names")
     public void get_all_categories_names() {
-        responseCategories = RestAssured.given().get();
-        categoryList = responseCategories.jsonPath().getList("categories");
-        System.out.println("Get categories as List");
+        categoryList = given()
+                .get()
+                .jsonPath()
+                .getList("categories");
+        System.out.println("Get categories List");
     }
 
     @Then("heck if category is missing")

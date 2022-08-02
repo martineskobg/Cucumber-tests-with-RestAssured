@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
         features = "src/test/resources",
         glue = "step.definitions",
         plugin = {"pretty"},
-        tags = "@endpoints or (@random or @entries or @categories)"
+        tags = "@endpoint"
 )
 
 public class TestRunner {

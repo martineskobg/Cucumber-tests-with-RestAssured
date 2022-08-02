@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.List;
 import java.util.Map;
 
 public class RandomSteps {
@@ -18,6 +19,8 @@ public class RandomSteps {
     private int actualParametersCount;
     private Map<Object, Object> randomMap;
     private String httpsParameter;
+    private String actualCorsValue;
+    private String expectedCorsValue;
 
     @Given("Api base url for random {string}")
     public void api_base_url_for_random(String apiBaseUrl) {
@@ -84,4 +87,28 @@ public class RandomSteps {
         System.out.println("Check if HTTPS parameter has value: " + expectedValue);
     }
 
+    @Given("Parameter Cors is {word}")
+    public void parameterCorsIsYes(String value) {
+        System.out.println("Save expected Cors value");
+        expectedCorsValue = value;
+    }
+
+    @When("Get random entry with param Cors equal to {word}")
+    public void getRandomEntryWithParamCorsEqualToYes(String value) {
+        System.out.println("Get random entry with param Cors");
+        responseRandom = RestAssured.given()
+                .when().queryParam("Cors", value)
+                .get();
+        List<Map<Object, Object>> myList ;
+        myList = responseRandom.jsonPath().getList("entries");
+
+        actualCorsValue = myList.get(0).get("Cors").toString();
+
+    }
+
+    @Then("Verify cors value")
+    public void verifyTheValueOfParameterCorsIsYes() {
+        System.out.println("Verify cors value");
+        Assertions.assertEquals(expectedCorsValue, actualCorsValue, "Expected Cors value is not equal to: " + actualCorsValue);
+    }
 }
